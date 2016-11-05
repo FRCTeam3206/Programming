@@ -10,6 +10,8 @@ Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
   #define Serial SerialUSB
 #endif
 
+const int block = 32;
+
 void setup() {
   // put your setup code here, to run once:
   #ifndef ESP8266
@@ -35,7 +37,7 @@ void setup() {
   
   Serial.println("Waiting for an ISO14443A Card ...");
 }
-
+int i = 0000;
 void loop() {
   // put your main code here, to run repeatedly:
   uint8_t success;
@@ -57,23 +59,21 @@ void loop() {
 
     if (uidLength >= 4) {
       uint8_t keya[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-      success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, 4, 0, keya);
+      uint8_t data[16] = { 0x0E };
+//      memcpy(data, (uint8_t[]){ i }, sizeof data);
+//      i = i + 1;
+      success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, block, 0, keya);
       if (success) {
-//        Serial.println("Authenticated");
-        uint8_t data[16];
-        memcpy(data, (const uint8_t[]){ "3206" }, sizeof data);
-        nfc.mifareclassic_WriteDataBlock (4, data);
-        success = nfc.mifareclassic_ReadDataBlock (4, data);
-        if (success) {
-
-          nfc.PrintHexChar(data, 16);
+         nfc.mifareclassic_WriteDataBlock (block, data);
+          success = nfc.mifareclassic_ReadDataBlock (block, data);
+            if (success) {
+              nfc.PrintHexChar(data, 16);
 //          delay(2000);
-        }
-        if (!success) {
-//          Serial.println("Failure");
+            
         }
       }
-    }else { Serial.println("Authentication Failed"); }
+    }
+  delay(3000);
   }
-//  delay(2000);
 }
+
