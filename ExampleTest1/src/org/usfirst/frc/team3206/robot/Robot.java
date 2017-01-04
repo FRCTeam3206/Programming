@@ -13,30 +13,15 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * This is a demo program showing the use of the RobotDrive class.
- * The SampleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- *
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're inexperienced,
- * don't. Unless you know what you are doing, complex code will be much more difficult under
- * this system. Use IterativeRobot or Command-Based instead if you're new.
- */
+
 public class Robot extends SampleRobot {
     RobotDrive myRobot;
-    Joystick stick;
+    Joystick stick0; // all joysticks will be named as such stickX where X is the position on the Driver Station
     Joystick stick1;
-    DigitalOutput dio0;
+    DigitalOutput dio0; // all dio will be named as such dioX where X is the DIO pin on the roboRIO
     DigitalInput dio1;
-    Compressor c;
-    DoubleSolenoid cylinder0;
+    Compressor c;  // all compressors will be named c
+    DoubleSolenoid solenoid0-1; // all solenoids will be named as such solenoidX or solenoidX-Y where for single solenoids X is the connection on the PCM and for double solenoids X is the first connection and Y is the second
     SmartDashboard dash;
     final String defaultAuto = "Default";
     final String customAuto = "My Auto";
@@ -45,13 +30,13 @@ public class Robot extends SampleRobot {
     public Robot() {
         myRobot = new RobotDrive(0, 1);
         myRobot.setExpiration(0.1);
-        stick = new Joystick(0);
+        stick0 = new Joystick(0);
         stick1 = new Joystick(1);
         dio0 = new DigitalOutput(0);
         dash = new SmartDashboard();
         dio1 = new DigitalInput(1);
         c = new Compressor(0);
-        cylinder0 = new DoubleSolenoid(0,1);
+        solenoid0-1 = new DoubleSolenoid(0,1);
     }
     
     public void robotInit() {
@@ -59,7 +44,6 @@ public class Robot extends SampleRobot {
         chooser.addDefault("Default Auto", defaultAuto);
         chooser.addObject("My Auto", customAuto);
         SmartDashboard.putData("Auto modes", chooser);
-        c.setClosedLoopControl(false);
     }
 
 	/**
@@ -106,17 +90,20 @@ public class Robot extends SampleRobot {
     public void operatorControl() {
         myRobot.setSafetyEnabled(false);
         while (isOperatorControl() && isEnabled()) {
-        	if(stick.getRawButton(4)) {
-        		c.setClosedLoopControl(true);
-        	} else if(stick.getRawButton(5)) {
+        	if(stick0.getRawButton(4)) {
+        		c.setClosedLoopControl(true); // this method c.setClosedLoopControl(boolean input);
+        									//  is what we use to control the compressor
+        									// when it is set to true it will run the compressor until the pressure
+        									// sensor reads true which is at 120 psi
+        	} else if(stick0.getRawButton(5)) {
         		c.setClosedLoopControl(false);
         	}
-        	if(stick.getRawButton(1)) {
-        		cylinder0.set(DoubleSolenoid.Value.kForward);
-        	} else if(stick.getRawButton(2)) {
-        		cylinder0.set(DoubleSolenoid.Value.kReverse);
+        	if(stick0.getRawButton(1)) {
+        		solenoid0-1.set(DoubleSolenoid.Value.kForward);
+        	} else if(stick0.getRawButton(2)) {
+        		solenoid0-1.set(DoubleSolenoid.Value.kReverse);
         	} else {
-        		cylinder0.set(DoubleSolenoid.Value.kOff);
+        		solenoid0-1.set(DoubleSolenoid.Value.kOff);
         	}
         	if(!dio1.get()) {
         		myRobot.tankDrive(1.0, 1.0);
