@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.CameraServer;
 
 
 public class Robot extends SampleRobot {
@@ -23,6 +24,7 @@ public class Robot extends SampleRobot {
     Compressor c;  // all compressors will be named c
     DoubleSolenoid solenoid0-1; // all solenoids will be named as such solenoidX or solenoidX-Y where for single solenoids X is the connection on the PCM and for double solenoids X is the first connection and Y is the second
     SmartDashboard dash;
+    CameraServer cs;
     final String defaultAuto = "Default";
     final String customAuto = "My Auto";
     SendableChooser chooser;
@@ -36,6 +38,7 @@ public class Robot extends SampleRobot {
         dash = new SmartDashboard();
         dio1 = new DigitalInput(1);
         c = new Compressor(0);
+        cs = new CameraServer();
         solenoid0-1 = new DoubleSolenoid(0,1);
     }
     
@@ -44,6 +47,7 @@ public class Robot extends SampleRobot {
         chooser.addDefault("Default Auto", defaultAuto);
         chooser.addObject("My Auto", customAuto);
         SmartDashboard.putData("Auto modes", chooser);
+        cs.
     }
 
 	/**
